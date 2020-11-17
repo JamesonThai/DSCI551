@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+      <script>
+      $(function() {
+           $("#search_form_input").click(function(){
+                  var text = $(form).val();
+                  $('input:checkbox.class').each(function () {
+                       var sThisVal = (this.checked ? $(this).val() : "");
+                       console.log(sThisVal)
+                  });
+
+                  let crimeList = [];
+                  let housingList = [];
+                  let actList = [];
+
+                  $(".Crime:checked").each(function() {
+                      crimeList.push(this.value);
+                      console.log(crimeList)
+                  });
+
+                  $(".Housing:checked").each(function() {
+                      housingList.push(this.value);
+                      console.log(housingList)
+                  });
+
+                  $(".ACT:checked").each(function() {
+                      actList.push(this.value);
+                      console.log(actList)
+                  });
+
+                  let postParamObj = {act:actList, housing:housingList, crime: crimeList}
+
+                  $.ajax({
+                    url: "/searchByParams",
+                    type: "post",
+                    contentType: 'application/json;charset=UTF-8',
+                    data: JSON.stringify(postParamObj),
+                    success: function(response) {
+                      console.log('emma')
+                      console.log(response)
+                      $("#search_result").html(response);
+                    },
+                    error: function(xhr) {
+                      console.log('fail')
+                      //Do Something to handle error
+                    }
+                  });
+              });
+           });
+    </script>
+    <meta charset="utf-8">
+    <title>Flask Tutorial</title>
+  </head>
+  <body>
+    {% extends "template.html" %}
+    {% block content %}
+
+    <h1> Search Function Here </h1>
+
+    <form method="POST" id="form">
+      <div class="form-group" style="height: 500px; width:500px; overflow:scroll; border: solid 1px; padding-left: 20px;">
+        {% for k in result %}
+<!--        <select name="neighborhood" class="select-field">-->
+            <div>
+              <span style="width:100px;display: inline-block;" value="{{ k }}" {% if k == default_value %}selected="selected"{% endif %}>{{ k }}</span>
+              <input type="checkbox" class = "Crime" name="crime" value="{{ k }}" id="C_{{ k }}"> Crime </label>
+              <input type="checkbox" class = "Housing" name="housing" value="{{ k }}" id="H_{{ k }}"> Housing </label>
+              <input type="checkbox" class = "ACT" name="act" value="{{ k }}" id="A_{{ k }}"> ACT </label>
+            </div>
+<!--        </select>-->
+        {% endfor %}
+        <!--         <input name="neighborhood" id="neighborhood" value="Koreatown">-->
+
+      </div>
+      <div id="search_result">
+
+      </div >
+      <div/>
+      <input style="width:100px;font-size:30px;" type="button" id="search_form_input" value = "search">
+    </form>
+
+    {% endblock %}
+
+
+
+  </body>
+</html>
