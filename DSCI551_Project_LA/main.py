@@ -38,13 +38,13 @@ def search_post():
     pd_crime, pd_housing, pd_act = {}, {}, {}
 
     if json_obj["crime"] and len(json_obj["crime"]) != 0:
-        pd_crime = search_neighborhoods_features(json_obj["crime"], ["CrimeCount", 'CrimeScore'])
+        pd_crime = search_neighborhoods_features(json_obj["crime"], ["CrimeCount", 'CrimeScore']).to_dict()
     if json_obj["housing"] and len(json_obj["housing"]) != 0:
-        pd_housing = search_neighborhoods_features(json_obj["housing"], ["HousingScore"])
+        pd_housing = search_neighborhoods_features(json_obj["housing"], ["HousingScore"]).to_dict()
     if json_obj["act"] and len(json_obj["act"]) != 0:
-        pd_act = search_neighborhoods_features(json_obj["act"], ["AvgACT", "AvgScrEng","AvgScrMath"])
+        pd_act = search_neighborhoods_features(json_obj["act"], ["AvgACT", "AvgScrEng","AvgScrMath"]).to_dict()
 
-    out = {"crime":pd_crime.to_dict(),"housing":pd_housing.to_dict(), "act":pd_act.to_dict()}
+    out = {"crime": pd_crime,"housing": pd_housing, "act": pd_act}
     return render_template("search_result.html", result=out)
 
 
