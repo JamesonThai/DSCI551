@@ -2,6 +2,8 @@
 <html lang="en" dir="ltr">
   <head>
      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<!--     <script src="scripts/plotly-latest.min.js" type="text/javascript"></script>-->
+     <script src="{{url_for('static', filename='scripts/plotly-latest.min.js')}}"></script>
       <script>
       $(function() {
            $("#search_form_input").click(function(){
@@ -32,6 +34,7 @@
 
                   let postParamObj = {act:actList, housing:housingList, crime: crimeList}
 
+                  // fetch data from firebase
                   $.ajax({
                     url: "/searchByParams",
                     type: "post",
@@ -41,6 +44,22 @@
                       console.log('emma')
                       console.log(response)
                       $("#search_result").html(response);
+                    },
+                    error: function(xhr) {
+                      console.log('fail')
+                      //Do Something to handle error
+                    }
+                  });
+
+                  // draw bar chart
+                  $.ajax({
+                    url: "/showBarChart",
+                    type: "post",
+                    contentType: 'application/json;charset=UTF-8',
+                    data: JSON.stringify(postParamObj),
+                    success: function(response) {
+                      console.log(response)
+                      $("#chart_result").html(response);
                     },
                     error: function(xhr) {
                       console.log('fail')
@@ -58,9 +77,10 @@
     {% block content %}
 
     <h1> Search Function Here </h1>
-
+    <input style="width:100px;font-size:30px;display:;" type="button" id="search_form_input" value = "search">
     <form method="POST" id="form">
-      <div class="form-group" style="height: 500px; width:500px; overflow:scroll; border: solid 1px; padding-left: 20px;">
+
+      <div class="form-group" style="height: 500px; width:500px; overflow:scroll; border: solid 1px; padding-left: 20px; display: inline-block; float: left;">
         {% for k in result %}
 <!--        <select name="neighborhood" class="select-field">-->
             <div>
@@ -74,11 +94,16 @@
         <!--         <input name="neighborhood" id="neighborhood" value="Koreatown">-->
 
       </div>
-      <div id="search_result">
+      <div style="height: 500px; width:1200px; display: inline-block; float: left;">
+        <div id="search_result">
 
-      </div >
+        </div >
+        <div id="chart_result">
+
+        </div >
+      </div>
       <div/>
-      <input style="width:100px;font-size:30px;" type="button" id="search_form_input" value = "search">
+
     </form>
 
     {% endblock %}
