@@ -1,4 +1,4 @@
-,schoolName,AvgScrRead,AvgScrEng,AvgScrMath,AvgScrSci,AVERAGE,RegionName,Lan,Lon,Add1,Add2,Add3
+id,schoolName,AvgScrRead,AvgScrEng,AvgScrMath,AvgScrSci,AVERAGE,RegionName,Lan,Lon,Add1,Add2,Add3
 0,Abraham Lincoln Senior High,21,20,23,22,21.5,Lincoln Heights,34.0747088,-118.2036834,North Broadway,Lincoln Heights,Los Angeles
 1,Academia Avance Charter,15,15,17,16,15.75,Highland Park,34.1078595,-118.1980778,North Avenue 53,Highland Park,Los Angeles
 2,Academies of Education and Empowerment at Carson High,18,18,18,17,17.75,Carson,33.8211918,-118.2754598,South Main Street,Carson,Los Angeles County

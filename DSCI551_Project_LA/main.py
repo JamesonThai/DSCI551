@@ -4,12 +4,12 @@ import numpy as np
 import sys
 import json
 import requests
-import plotly
-import plotly.plotly as py
+import plotly as py
+# import plotly.plotly as py
 import plotly.graph_objs as go
 import plotly.offline as plt
 
-import plotly.graph_objs as go
+# import plotly.graph_objs as go
 
 app = Flask(__name__)
 
@@ -76,7 +76,7 @@ def line():
     fig3 = createLayout({"CrimeCount": pd_crime['CrimeCount']}, "Crime Count", "Region", "Crime count per region")
     fig4 = createLayout({"CrimeScore": pd_crime['CrimeScore']}, "Crime Score", "Region", "Crime score per region", [0,1])
 
-    fig_json = json.dumps([fig1,fig2,fig3,fig4], cls=plotly.utils.PlotlyJSONEncoder)
+    fig_json = json.dumps([fig1,fig2,fig3,fig4], cls=py.utils.PlotlyJSONEncoder)
     return render_template('chart_bar.html', graphJSON=fig_json)
 
 def search_neighborhoods_features(NEIGHBORHOODS, FEATURES):
