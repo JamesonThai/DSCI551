@@ -127,6 +127,27 @@ def createLayout(data, title, xaxis, yaxis, range = None):
     # total_labels = [{"x": x, "y": total} for x, total in zip(list_values, list_neigh)]
 
     fig = go.Figure(data=data, layout=layout)
+    # Add averages here
+    if title == "ACT Score":
+        # print("act_scores")
+        output = dict(color='maroon', width = 1)
+        fig.add_shape(type='line', y0 = 19.91, y1 = 19.91, yref = 'y', x0 = 0, x1 = 1, xref = 'paper', line = output)
+        fig.add_shape(type='line', y0 = 19.96, y1 = 19.96, yref = 'y', x0 = 0, x1 = 1, xref = 'paper', line = output)
+        fig.add_shape(type='line', y0 = 20.44, y1 = 20.44, yref = 'y', x0 = 0, x1 = 1, xref = 'paper', line = output)
+        fig.add_shape(type='line', y0 = 19.786, y1 = 19.786, yref = 'y', x0 = 0, x1 = 1, xref = 'paper', line = output)
+    elif title == "Housing Score":
+        # print("Housing Scores")
+        output = dict(color='maroon', width = 1)
+        fig.add_shape(type='line', y0 = 829172, y1 = 829172, yref = 'y', x0 = 0, x1 = 1, xref = 'paper', line = output)
+        # fig.add_hline(y=829172, row='all', col='all')
+    elif title == "Crime Count":
+        # print("CRIME COUNTS")
+        output = dict(color='maroon', width = 1)
+        fig.add_shape(type='line', y0 = 2377, y1 = 2377, yref = 'y', x0 = 0, x1 = 1, xref = 'paper', line = output)
+    else:
+        output = dict(color='maroon', width = 1)
+        fig.add_shape(type='line', y0 = 0.161093, y1 = 0.161093, yref = 'y', x0 = 0, x1 = 1, xref = 'paper', line = output)
+        
     # fig = fig.update_layout(annotations=total_labels)
     return fig
 
