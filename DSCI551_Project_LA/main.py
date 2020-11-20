@@ -67,16 +67,16 @@ def line():
     if json_obj["housing"] and len(json_obj["housing"]) != 0:
         pd_housing = search_neighborhoods_features(json_obj["housing"], ["HousingScore"]).to_dict()
     if json_obj["act"] and len(json_obj["act"]) != 0:
-        pd_act = search_neighborhoods_features(json_obj["act"], ["AvgACT", "AvgScrEng", "AvgScrMath"]).to_dict()
+        pd_act = search_neighborhoods_features(json_obj["act"], ["AvgACT", "AvgScrEng", "AvgScrMath", "AvgScrRead", "AvgScrSci"]).to_dict()
 
     print(pd_crime)
     # out = {"crime": pd_crime, "housing": pd_housing, "act": pd_act}
     fig1 = createLayout(pd_act, "ACT Score", "Region", "ACT score per region")
     fig2 = createLayout(pd_housing, "Housing Score", "Region", "Housing score per region")
     fig3 = createLayout({"CrimeCount": pd_crime['CrimeCount']}, "Crime Count", "Region", "Crime count per region")
-    fig4 = createLayout({"CrimeScore": pd_crime['CrimeScore']}, "Crime Score", "Region", "Crime score per region", [0,1])
+    fig4 = createLayout({"CrimeScore": pd_crime['CrimeScore']}, "Crime Score", "Region", "Crime score per region", [0,0.3])
 
-    fig_json = json.dumps([fig1,fig2,fig3,fig4], cls=plotly.utils.PlotlyJSONEncoder)
+    fig_json = json.dumps([fig1, fig2, fig3, zfig4], cls=plotly.utils.PlotlyJSONEncoder)
     return render_template('chart_bar.html', graphJSON=fig_json)
 
 def search_neighborhoods_features(NEIGHBORHOODS, FEATURES):
