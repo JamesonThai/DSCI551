@@ -7,7 +7,9 @@ import requests
 import plotly as py
 # import plotly.plotly as py
 import plotly.graph_objs as go
+# plotly.graph_objs.Choropleth
 import plotly.offline as plt
+import plotly.express as px
 
 # import plotly.graph_objs as go
 
@@ -39,7 +41,7 @@ def search_post():
     request_data = request.data
     decoded_bytedata = request_data.decode('utf-8')  # Decode using the utf-8 encoding
     json_obj = json.loads(decoded_bytedata)
-    print(json_obj)
+    # print(json_obj)
 
     pd_crime, pd_housing, pd_act = {}, {}, {}
 
@@ -69,19 +71,95 @@ def line():
     if json_obj["act"] and len(json_obj["act"]) != 0:
         pd_act = search_neighborhoods_features(json_obj["act"], ["AvgACT", "AvgScrEng", "AvgScrMath", "AvgScrRead","AvgScrSci"]).to_dict()
 
-    print(pd_crime)
+    # print(pd_crime)
     # out = {"crime": pd_crime, "housing": pd_housing, "act": pd_act}
     fig1 = createLayout(pd_act, "ACT Score", "Region", "ACT score per region")
     fig2 = createLayout(pd_housing, "Housing Score", "Region", "Housing score per region")
     fig3 = createLayout({"CrimeCount": (pd_crime['CrimeCount'] if 'CrimeCount' in pd_crime else {})}, "Crime Count", "Region", "Crime count per region")
     fig4 = createLayout({"CrimeScore": (pd_crime['CrimeScore'] if 'CrimeScore' in pd_crime else {})}, "Crime Score", "Region", "Crime score per region", [0,0.3])
 
-    fig_json = json.dumps([fig1,fig2,fig3,fig4], cls=py.utils.PlotlyJSONEncoder)
+    # Mapping of GeoJSON
+    # output1 = map_geojson(pd_act, "ACT_Scores")
+    output1 = map_geojson(json_obj)
+    # print(output1)
+
+    fig_json = json.dumps([fig1,fig2,fig3,fig4, output1], cls=py.utils.PlotlyJSONEncoder)
     return render_template('chart_bar.html', graphJSON=fig_json)
+
+# def map_geojson(df_input, obj_type):
+def map_geojson(json_obj):
+    print("Obtaining GeoJSON")
+    with open("Los Angeles Neighborhood Map.geojson") as infile:
+        geo_jsons = json.load(infile)
+    infile.close()
+
+    # Get list of neighborhoods
+    score_neighborhooods = {}
+    t1 = pd.read_excel("LA City Neighborhoods.xlsx").iloc[:,0]
+    references = t1.values.tolist()
+    
+    # print(data_f)
+    # Data is form of dict(list(dict))
+    # default_map = {}
+
+    # features = geo_jsons["features"]
+    # for item in features:
+    #     neighborhood_name = item['properties']['name']
+    #     geo = item['geometry']
+    #     lat = item['properties']['latitude']
+    #     lon = item['properties']['longitude']
+
+    #     default_map[neighborhood_name] = {"geo" : geo, "coordinates" : (lat, lon), "visibility" : 0}
+    #     if neighborhood_name in references: score_neighborhooods[neighborhood_name] = {"geo": geo, "coordinates" : (lat, lon), "visibility" : 1}
+
+        # break
+
+    # print(df_input.head())
+    # known_values = {}
+    # for k,v in df_input.items():
+    #     for k1,v2 in v.items():
+    #         adder = v2
+    #         if v2 is None: adder = 0
+    #         if k1 in known_values.keys(): known_values[k1].append(adder)
+    #         else: known_values[k1] = [adder]
+    # list_neighbors, list_values = [],[]
+    # for k,v in known_values.items():
+    #     list_values.append(sum(v) / len(v))
+    #     list_neighbors.append(k)
+
+    # for i in range(len(list_neighbors)):
+        # print(list_neighbors[i], list_values[i])
+    x = set()
+    for k,v in json_obj.items():
+        x.update(v)
+
+    queried_n = list(x)
+    list_neighbors, list_values = [],[]
+    for neighborhood in references: 
+        outer_val = 0
+        if neighborhood in queried_n: outer_val = 1
+        list_neighbors.append(neighborhood)
+        list_values.append(outer_val)
+
+
+    data = {"name" : list_neighbors, "Queried" : list_values}
+    out_data = pd.DataFrame.from_dict(data)
+
+    #141 vs 77
+    # print(len(references), len(score_neighborhooods.keys()))
+    holder = t1.to_frame()
+    # holder['randNumCol'] = np.random.randint(1, 6, holder.shape[0])
+    holder['randNumCol'] = 0
+    # print(holder)
+    # mapper = px.choropleth_mapbox(holder, geojson = geo_jsons, locations = 'name', color="randNumCol", mapbox_style="carto-positron", center = {"lat": 34.0522,"lon" : -118.2437}, featureidkey="properties.name", zoom = 9)
+    mapper = px.choropleth_mapbox(out_data, geojson = geo_jsons, locations = 'name', color="Queried", mapbox_style="carto-positron", center = {"lat": 34.0522,"lon" : -118.2437}, featureidkey="properties.name", zoom = 9)
+    fig = go.Figure(data = mapper, layout = go.Layout(title = "LA Neighborhood Map"))
+    fig.update_layout(coloraxis_showscale=False)
+    return fig
 
 def search_neighborhoods_features(NEIGHBORHOODS, FEATURES):
     query_output_dict = {}
-
+ 
     # First populate the query_output_dict
     for feat in FEATURES:
         for neig in NEIGHBORHOODS:
@@ -108,8 +186,9 @@ def createLayout(data, title, xaxis, yaxis, range = None):
         for k1, v1 in v.items():
             list_neigh.append(k1)
             if v1 is None: v1 = 0
-            list_values.append(v1)
-
+            list_values.append(round(v1,2))
+        # print(list_neigh)
+        # print(list_values)
         traces.append(go.Bar(name=k, x=list_neigh, y=list_values, offsetgroup=idx, text=list_values, textposition='outside'))
         idx += 1
 
@@ -131,10 +210,10 @@ def createLayout(data, title, xaxis, yaxis, range = None):
     if title == "ACT Score":
         # print("act_scores")
         output = dict(color='maroon', width = 1)
-        fig.add_shape(type='line', y0 = 19.91, y1 = 19.91, yref = 'y', x0 = 0, x1 = 1, xref = 'paper', line = output)
-        fig.add_shape(type='line', y0 = 19.96, y1 = 19.96, yref = 'y', x0 = 0, x1 = 1, xref = 'paper', line = output)
-        fig.add_shape(type='line', y0 = 20.44, y1 = 20.44, yref = 'y', x0 = 0, x1 = 1, xref = 'paper', line = output)
-        fig.add_shape(type='line', y0 = 19.786, y1 = 19.786, yref = 'y', x0 = 0, x1 = 1, xref = 'paper', line = output)
+        fig.add_shape(type='line', y0 = 20.02, y1 = 20.02, yref = 'y', x0 = 0, x1 = 1, xref = 'paper', line = output)
+        # fig.add_shape(type='line', y0 = 19.96, y1 = 19.96, yref = 'y', x0 = 0, x1 = 1, xref = 'paper', line = output)
+        # fig.add_shape(type='line', y0 = 20.44, y1 = 20.44, yref = 'y', x0 = 0, x1 = 1, xref = 'paper', line = output)
+        # fig.add_shape(type='line', y0 = 19.786, y1 = 19.786, yref = 'y', x0 = 0, x1 = 1, xref = 'paper', line = output)
     elif title == "Housing Score":
         # print("Housing Scores")
         output = dict(color='maroon', width = 1)
@@ -147,7 +226,7 @@ def createLayout(data, title, xaxis, yaxis, range = None):
     else:
         output = dict(color='maroon', width = 1)
         fig.add_shape(type='line', y0 = 0.161093, y1 = 0.161093, yref = 'y', x0 = 0, x1 = 1, xref = 'paper', line = output)
-        
+
     # fig = fig.update_layout(annotations=total_labels)
     return fig
 

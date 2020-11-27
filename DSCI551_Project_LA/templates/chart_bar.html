@@ -13,7 +13,7 @@
         .chart{
             margin-top: 10px;
             height: 400px;
-            width: 600px;
+            width: 700px;
          /*   height : 400px;
             width: 650px;*/
             display: inline-block !important;
@@ -26,6 +26,26 @@
             float: clear !important;
             text-align: right;
         }
+        .chart_bot{
+            margin-top: 100px;
+            height: 400px;
+            width: 2000px;
+         /*   height : 400px;
+            width: 650px;*/
+            display: inline-block !important;
+            float: left !important;
+<!--            text-align: center;-->
+        }
+        .chart_geo{
+            margin-top: 100px;
+            height: 800px;
+            width: 2000px;
+         /*   height : 400px;
+            width: 650px;*/
+            display: inline-block !important;
+            float: left !important;
+<!--            text-align: center;-->
+        }
     </style>
 </head>
 
@@ -37,9 +57,9 @@
 <!--        </h2>-->
 <!--    </div>-->
 
-    <div id="chart1" class="chart">
-    </div>
-
+    <!-- <div id="chart1" class="chart"> -->
+    <!-- </div> -->
+    <div>
     <div id="chart2" class="chart">
     </div>
 
@@ -48,11 +68,12 @@
 
     <div id="chart4" class="chart">
         <div id="summary" class="summary">
-            * A neighborhood's Crime Score depicts how severe the average crime in that given neighborhood is, with higher scores representing more severe crimes on average
+            * A neighborhood's Crime Score depicts how severe the crime is in that given neighborhood, the higher scores equates to the more severe crimes
         </div>
     </div>
-
-
+    </div>
+    <div id="chart1" class="chart_bot"></div>
+    <div id = "chart5" class= "chart_geo"></div>
 </body>
 
     <!-- D3.js -->
@@ -72,6 +93,7 @@
             Plotly.plot('chart2',graphs[1],{});
             Plotly.plot('chart3',graphs[2],{});
             Plotly.plot('chart4',graphs[3],{});
+            Plotly.plot('chart5', graphs[4], {});
         })
 
     </script>
