@@ -18,3 +18,5 @@
 - Google App Engine (Standard Environment)
 - Git
 
+# More detailed analysis
+https://jamesonthai.github.io/portfolio/laneighborhoods/
